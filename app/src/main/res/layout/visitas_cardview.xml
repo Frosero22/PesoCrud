@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:clickable="true"
+    card_view:cardElevation="1dp"
+    android:layout_marginTop="10dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:background="@color/colorPrimary"
+    card_view:cardCornerRadius="20dp"
+    card_view:cardUseCompatPadding="true">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal|top"
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txvNumeroOrden"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textStyle="bold"
+            android:layout_gravity="top"
+            android:textColor="@color/white"
+            android:background="@color/colorPrimary"
+            android:text="Visita #1"
+            />
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txvNombrePaciente"
+            android:text="FRANCESCO ANTONIO VILLACIS ROSERO"
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            android:textAlignment="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:background="@android:color/transparent"
+            android:textStyle="bold"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txvEdad"
+            android:text="19 Años y 9 Meses"
+            android:textSize="18dp"
+            android:textAlignment="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:background="@android:color/transparent"
+            android:textStyle="bold"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txvFechaOrden"
+            android:textSize="18dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textAlignment="center"
+            android:background="@android:color/transparent"
+            android:text="Celular: 0967982302"/>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnTomarAtencion"
+                android:textSize="18dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="top"
+                android:textColor="@color/colorPrimary"
+                android:background="@drawable/boton_transparente"
+                android:text="TOMAR VISITA"
+                />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnLlamar"
+                android:textSize="18dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="top"
+                android:textColor="@color/colorPrimary"
+                android:background="@drawable/boton_transparente"
+                android:text="llamar"
+                />
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnGPS"
+                android:textSize="18dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="top"
+                android:textColor="@color/colorPrimary"
+                android:background="@drawable/boton_transparente"
+                android:text="ver Ubicación"
+                />
+
+
+        </LinearLayout>
+
+
+
+
+
+
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+</androidx.cardview.widget.CardView>
