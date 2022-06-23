@@ -2,12 +2,20 @@ package com.appcrud.pesosaludablecrud;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.appcrud.pesosaludablecrud.API.ApiClient;
+import com.appcrud.pesosaludablecrud.API.ApiModels.Usuario;
+import com.appcrud.pesosaludablecrud.API.Services;
 import com.google.android.material.textfield.TextInputLayout;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginController extends AppCompatActivity {
 
@@ -19,6 +27,8 @@ public class LoginController extends AppCompatActivity {
 
     private Button bt_login;
     private Button bt_forgot;
+
+    protected Services service = ApiClient.getInstance();
 
 
     @Override
@@ -76,8 +86,38 @@ public class LoginController extends AppCompatActivity {
 
     public void login(String strUsuario, String strPass){
 
+        Call<Usuario> call = service.ingresoUsuario(strUsuario,strPass);
+        try{
+
+            call.enqueue(new Callback<Usuario>() {
+                @Override
+                public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+
+                    if(response.code() == 200){
+                        ingresar();
+                    }else{
+                        
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<Usuario> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
 
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    public void ingresar(){
+        Intent intent = new Intent(LoginController.this,PrincipalController.class);
+        startActivity(intent);
+        finish();
     }
 
     public void forgotPass(){
