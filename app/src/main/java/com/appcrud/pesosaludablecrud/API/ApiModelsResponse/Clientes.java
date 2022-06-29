@@ -1,4 +1,4 @@
-package com.appcrud.pesosaludablecrud.API.ApiModels;
+package com.appcrud.pesosaludablecrud.API.ApiModelsResponse;
 
 import com.google.gson.annotations.SerializedName;
 

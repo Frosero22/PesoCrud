@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.appcrud.pesosaludablecrud.API.ApiModels.Usuario;
+import com.appcrud.pesosaludablecrud.API.ApiModelsResponse.Usuario;
 import com.appcrud.pesosaludablecrud.R;
 import com.appcrud.pesosaludablecrud.Utils.Routes;
 import com.appcrud.pesosaludablecrud.Utils.Sessions;

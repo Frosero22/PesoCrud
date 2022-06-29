@@ -314,6 +314,7 @@
                     android:hint="Presióne encima para tomar la ubicación actual"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textEmailAddress"
+                    android:enabled="false"
                     android:maxLines="1"
                     android:singleLine="true"/>
 
@@ -323,7 +324,7 @@
 
 
             <Button
-                android:id="@+id/btnActualizar"
+                android:id="@+id/btGuardar"
                 android:layout_width="384dp"
                 android:layout_height="67dp"
                 android:layout_gravity="center"

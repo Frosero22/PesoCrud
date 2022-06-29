@@ -4,21 +4,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.SearchView;
 
 import com.appcrud.pesosaludablecrud.API.ApiClient;
-import com.appcrud.pesosaludablecrud.API.ApiModels.Clientes;
-import com.appcrud.pesosaludablecrud.API.ApiModels.Usuario;
+import com.appcrud.pesosaludablecrud.API.ApiModelsResponse.Clientes;
 import com.appcrud.pesosaludablecrud.API.Services;
 import com.appcrud.pesosaludablecrud.Adapters.ClientesAdapter;
 import com.appcrud.pesosaludablecrud.R;
@@ -27,11 +21,7 @@ import com.appcrud.pesosaludablecrud.Utils.ProgressDialog;
 import com.appcrud.pesosaludablecrud.Utils.Routes;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.json.JSONException;
-
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;

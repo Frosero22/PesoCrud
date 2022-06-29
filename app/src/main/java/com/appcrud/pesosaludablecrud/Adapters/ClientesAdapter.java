@@ -1,11 +1,7 @@
 package com.appcrud.pesosaludablecrud.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.appcrud.pesosaludablecrud.API.ApiModels.Clientes;
+import com.appcrud.pesosaludablecrud.API.ApiModelsResponse.Clientes;
 import com.appcrud.pesosaludablecrud.R;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;

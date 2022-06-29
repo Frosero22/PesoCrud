@@ -3,9 +3,7 @@ package com.appcrud.pesosaludablecrud.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.appcrud.pesosaludablecrud.API.ApiModels.Usuario;
-
-import java.util.logging.SocketHandler;
+import com.appcrud.pesosaludablecrud.API.ApiModelsResponse.Usuario;
 
 public class Sessions {
 

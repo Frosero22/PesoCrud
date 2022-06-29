@@ -1,6 +1,5 @@
-package com.appcrud.pesosaludablecrud.API.ApiModels;
+package com.appcrud.pesosaludablecrud.API.ApiModelsResponse;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
 public class Usuario {

@@ -7,7 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.appcrud.pesosaludablecrud.API.ApiClient;
-import com.appcrud.pesosaludablecrud.API.ApiModels.Usuario;
+import com.appcrud.pesosaludablecrud.API.ApiModelsResponse.Usuario;
 import com.appcrud.pesosaludablecrud.API.Services;
 import com.appcrud.pesosaludablecrud.R;
 import com.appcrud.pesosaludablecrud.Utils.Messages;

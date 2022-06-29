@@ -1,13 +1,14 @@
 package com.appcrud.pesosaludablecrud.API;
 
-import com.appcrud.pesosaludablecrud.API.ApiModels.Clientes;
-import com.appcrud.pesosaludablecrud.API.ApiModels.Orden;
-import com.appcrud.pesosaludablecrud.API.ApiModels.Usuario;
+import com.appcrud.pesosaludablecrud.API.ApiModelsRequest.RequestGuardarCliente;
+import com.appcrud.pesosaludablecrud.API.ApiModelsResponse.ClienteGuardadoResponse;
+import com.appcrud.pesosaludablecrud.API.ApiModelsResponse.Clientes;
+import com.appcrud.pesosaludablecrud.API.ApiModelsResponse.Usuario;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
@@ -19,6 +20,9 @@ public interface Services {
 
     @GET("/PesoSaludableApp/listarClientes")
     Call<ArrayList<Clientes>> listarClientes();
+
+    @GET("/PesoSaludableApp/guardarCliente")
+    Call<ClienteGuardadoResponse> guardarCliente(@Body RequestGuardarCliente requestGuardarCliente);
 
 
 }
