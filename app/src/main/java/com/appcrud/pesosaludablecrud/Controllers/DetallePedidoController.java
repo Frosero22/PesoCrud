@@ -1,8 +1,10 @@
-package com.appcrud.pesosaludablecrud;
+package com.appcrud.pesosaludablecrud.Controllers;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.appcrud.pesosaludablecrud.R;
 
 public class DetallePedidoController extends AppCompatActivity {
 

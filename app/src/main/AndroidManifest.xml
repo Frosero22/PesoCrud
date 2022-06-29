@@ -9,20 +9,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PesoSaludableCRUD">
-        <activity android:name=".ProductosController"></activity>
+        <activity android:name=".Controllers.GuiasController"></activity>
+        <activity android:name=".Controllers.DespachoController" />
+        <activity android:name=".Controllers.ProductosController" />
         <activity android:name=".Parametrizaciones.CreacionProductoController" />
-        <activity android:name=".SeleccionProductosController" />
-        <activity android:name=".DetallePedidoController" />
+        <activity android:name=".Controllers.SeleccionProductosController" />
+        <activity android:name=".Controllers.DetallePedidoController" />
         <activity android:name=".Parametrizaciones.CreacionUsuariosController" />
-        <activity android:name=".UsuariosController" />
+        <activity android:name=".Controllers.UsuariosController" />
         <activity android:name=".Parametrizaciones.CreacionOrdenesController" />
-        <activity android:name=".OrdenesPedidosController" />
+        <activity android:name=".Controllers.OrdenesPedidosController" />
         <activity android:name=".Parametrizaciones.CreacionVisitaController" />
         <activity android:name=".Parametrizaciones.CreacionClientesController" />
-        <activity android:name=".ClientesController" />
-        <activity android:name=".VisitasController" />
-        <activity android:name=".PrincipalController" />
-        <activity android:name=".LoginController">
+        <activity android:name=".Controllers.ClientesController" />
+        <activity android:name=".Controllers.VisitasController" />
+        <activity android:name=".Controllers.PrincipalController" />
+        <activity android:name=".Controllers.LoginController">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
