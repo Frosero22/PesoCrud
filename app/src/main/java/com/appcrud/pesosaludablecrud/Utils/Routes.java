@@ -13,6 +13,7 @@ import com.appcrud.pesosaludablecrud.Controllers.ProductosController;
 import com.appcrud.pesosaludablecrud.Controllers.UsuariosController;
 import com.appcrud.pesosaludablecrud.Controllers.VisitasController;
 import com.appcrud.pesosaludablecrud.Parametrizaciones.CreacionClientesController;
+import com.appcrud.pesosaludablecrud.Parametrizaciones.CreacionValoracionController;
 
 public class Routes {
 
@@ -74,6 +75,14 @@ public class Routes {
         Intent intent = new Intent(context, CreacionClientesController.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+    }
+
+    public static void creacionCreacionValoracion(Context context, Integer codigoCliente){
+        Intent intent = new Intent(context, CreacionValoracionController.class);
+        intent.putExtra("codigoCliente",codigoCliente);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+
     }
 
 

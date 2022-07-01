@@ -2,6 +2,9 @@ package com.appcrud.pesosaludablecrud.Parametrizaciones;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -11,12 +14,24 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.appcrud.pesosaludablecrud.API.ApiClient;
 import com.appcrud.pesosaludablecrud.API.ApiModelsRequest.RequestGuardarCliente;
+import com.appcrud.pesosaludablecrud.API.ApiModelsResponse.ClienteGuardadoResponse;
+import com.appcrud.pesosaludablecrud.API.Services;
 import com.appcrud.pesosaludablecrud.R;
+import com.appcrud.pesosaludablecrud.Utils.Location;
+import com.appcrud.pesosaludablecrud.Utils.Messages;
+import com.appcrud.pesosaludablecrud.Utils.ProgressDialog;
+import com.appcrud.pesosaludablecrud.Utils.Routes;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CreacionClientesController extends AppCompatActivity {
 
@@ -59,6 +74,11 @@ public class CreacionClientesController extends AppCompatActivity {
     private Button btnGuardar;
 
     private Integer codigoTipoIdentificacion;
+    private String latitud;
+    private String longitud;
+    protected Services service = ApiClient.getInstance();
+    private ProgressDialog progressDialog = new ProgressDialog(CreacionClientesController.this);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,20 +119,24 @@ public class CreacionClientesController extends AppCompatActivity {
 
         inptGeolocalizacion = findViewById(R.id.inptGeolocalizacion);
         txtGeolocalizacion = findViewById(R.id.txtGeolocalizacion);
-        txtGeolocalizacion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        txtGeolocalizacion.setOnClickListener(view -> {
+            Location location = new Location();
+            location.getLocation();
 
+            if(location.getLoc() != null){
+                if(!location.getLoc().equalsIgnoreCase("")){
+                    txtGeolocalizacion.setText(location.getLoc());
+                    latitud = location.getLatitud();
+                    longitud = location.getLongitud();
+                }
+            }else{
+                Toast.makeText(this, "No se pudo obtener la ubicaciòn actual, por favor verifique el GPS y que la aplicaciòn tenga los permisos necesarios", Toast.LENGTH_SHORT).show();
             }
+
         });
 
         btnGuardar = findViewById(R.id.btGuardar);
-        btnGuardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                validaEstructura();
-            }
-        });
+        btnGuardar.setOnClickListener(view -> validaEstructura());
 
 
 
@@ -126,18 +150,15 @@ public class CreacionClientesController extends AppCompatActivity {
         lsTiposIdentificacion.add("SIN IDENTIFICACION");
 
         ArrayAdapter<String> a = new ArrayAdapter<String>(CreacionClientesController.this,R.layout.option_item,lsTiposIdentificacion);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                atTiposIdentificacion.setAdapter(a);
-                atTiposIdentificacion.setText(a.getItem(0).toString(),false);
-                if(a.getItem(0).equalsIgnoreCase("CEDULA")){
-                    codigoTipoIdentificacion = 1;
-                }else if(a.getItem(0).equalsIgnoreCase("RUC")){
-                    codigoTipoIdentificacion = 2;
-                }else{
-                    codigoTipoIdentificacion = 3;
-                }
+        runOnUiThread(() -> {
+            atTiposIdentificacion.setAdapter(a);
+            atTiposIdentificacion.setText(a.getItem(0),false);
+            if(a.getItem(0).equalsIgnoreCase("CEDULA")){
+                codigoTipoIdentificacion = 1;
+            }else if(a.getItem(0).equalsIgnoreCase("RUC")){
+                codigoTipoIdentificacion = 2;
+            }else{
+                codigoTipoIdentificacion = 3;
             }
         });
     }
@@ -233,14 +254,73 @@ public class CreacionClientesController extends AppCompatActivity {
             RequestGuardarCliente requestGuardarCliente = new RequestGuardarCliente();
             requestGuardarCliente.setCodigoTipoIdentificacion(codigoTipoIdentificacion);
             requestGuardarCliente.setIdentificacion(txtIdentificacion.getText().toString());
+            requestGuardarCliente.setPrimerNombre(txtPrimerNombre.getText().toString().toUpperCase());
+
+            if(!txtSegundoNombre.getText().toString().equalsIgnoreCase("")){
+                requestGuardarCliente.setSegundoNombre(txtSegundoNombre.getText().toString().toUpperCase());
+            }
+
+            requestGuardarCliente.setPrimerApellido(txtPrimerApellido.getText().toString().toUpperCase());
+
+            if(!txtSegundoApellido.getText().toString().equalsIgnoreCase("")){
+                requestGuardarCliente.setSegundoApellido(txtSegundoApellido.getText().toString().toUpperCase());
+            }
+
+            String strGenero = "";
+            if(radMasculino.isSelected()){
+                strGenero = "M";
+            }else if(radFemenino.isSelected()){
+                strGenero = "F";
+            }
+            requestGuardarCliente.setGenero(strGenero);
+            requestGuardarCliente.setFechaNacimiento(txtFechaNacimiento.getText().toString());
+            requestGuardarCliente.setEmail(txtCorreo.getText().toString());
+            requestGuardarCliente.setTelefono(txtTelefono.getText().toString());
+            requestGuardarCliente.setLatitud(latitud);
+            requestGuardarCliente.setLongitud(longitud);
+
+            guardarCliente(requestGuardarCliente);
         }
 
     }
 
     public void guardarCliente(RequestGuardarCliente requestGuardarCliente){
+        progressDialog.startLoadingDialog("Guardando CLiente");
+        Call<ClienteGuardadoResponse> call = service.guardarCliente(requestGuardarCliente);
+        call.enqueue(new Callback<ClienteGuardadoResponse>() {
+            @Override
+            public void onResponse(Call<ClienteGuardadoResponse> call, Response<ClienteGuardadoResponse> response) {
+                progressDialog.dismissDialog();
+                if(response.code() == 200){
+                    ClienteGuardadoResponse clienteGuardadoResponse = response.body();
+                    Messages.mensajeExito(CreacionClientesController.this,clienteGuardadoResponse.getMensaje());
+                    validaValoracionInicial(Integer.parseInt(clienteGuardadoResponse.getCodigoCliente()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ClienteGuardadoResponse> call, Throwable t) {
+                progressDialog.dismissDialog();
+                t.printStackTrace();
+                Messages.mensajeError(CreacionClientesController.this,"Error al guardar cliente, mensaje para sistemas: "+t.getLocalizedMessage());
+            }
+        });
 
 
 
     }
+
+    public void validaValoracionInicial(Integer codigoCliente){
+        new AlertDialog.Builder(CreacionClientesController.this)
+                .setTitle("Transacción Exitosa")
+                .setMessage("¿Desea realizar la valoración inicial?")
+                .setPositiveButton("Aceptar",
+                        (dialog, which) -> {
+                            Routes.creacionCreacionValoracion(CreacionClientesController.this,codigoCliente);
+                            finish();
+                            dialog.dismiss();
+                        }).setNegativeButton("Cancelar", (dialogInterface, i) -> Routes.clientesController(CreacionClientesController.this)).show();
+    }
+
 
 }
