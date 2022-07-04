@@ -28,7 +28,7 @@ public class Clientes {
     @SerializedName("telefono")
     private String telefono;
 
-    @SerializedName("telefono")
+    @SerializedName("codigoCliente")
     private Integer codigoCliente;
 
     @SerializedName("email")
