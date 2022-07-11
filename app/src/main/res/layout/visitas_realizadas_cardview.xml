@@ -15,50 +15,55 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:layout_gravity="center"
-        android:background="@color/white"
         android:gravity="center_horizontal|top"
-        android:orientation="vertical">
+        android:background="@color/white">
 
         <TextView
-            android:id="@+id/txvCodigoCliente"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:background="@color/colorPrimary"
+            android:id="@+id/txvNumeroVisita"
+            android:textSize="20dp"
             android:gravity="center"
             android:padding="5dp"
-            android:text="#18299"
+            android:textStyle="bold"
+            android:layout_gravity="top"
             android:textColor="@color/white"
-            android:textSize="20dp"
-            android:textStyle="bold" />
+            android:background="@color/colorPrimary"
+            android:text="Visita #1"
+            />
+
 
 
         <TextView
-            android:id="@+id/txvNombreCliente"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/txvFechaVisitaRealizada"
+            android:text="Fecha Realizada: 19 - JUN - 2022"
+            android:textSize="20dp"
             android:layout_marginTop="10dp"
-            android:background="@android:color/transparent"
+            android:textAlignment="center"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            android:text="FRANCESCO ANTONIO VILLACIS ROSERO"
-            android:textAlignment="center"
-            android:textSize="20dp"
-            android:textStyle="bold" />
+            android:background="@android:color/transparent"
+            android:textStyle="bold"/>
 
 
         <TextView
-            android:id="@+id/txvEdad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
+            android:id="@+id/txvHoraVisitaRealizada"
+            android:text="Hora de Visita: 18:00"
+            android:textSize="18dp"
+            android:textAlignment="center"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            android:text="19 Años y 9 Meses"
-            android:textAlignment="center"
-            android:textSize="18dp"
-            android:textStyle="bold" />
+            android:background="@android:color/transparent"
+            android:textStyle="bold"/>
+
+
+
 
 
         <LinearLayout
@@ -67,40 +72,34 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btn_ver_informacion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:layout_margin="10dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/boton_transparente"
+                android:id="@+id/btn_ver_detalle_visita"
+                android:textSize="18dp"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="VER INFORMACIÓN"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18dp" />
-
-
-
-            <Button
-                android:id="@+id/btn_ver_visitas"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top"
                 android:layout_margin="10dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/boton_transparente"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="VER VISITAS REALIZADAS"
+                android:layout_gravity="top"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18dp" />
+                android:background="@drawable/boton_transparente"
+                android:text="VER DETALLE"
+                />
+
+
 
 
         </LinearLayout>
 
 
+
+
+
+
+
+
     </androidx.appcompat.widget.LinearLayoutCompat>
+
 
 
 </androidx.cardview.widget.CardView>

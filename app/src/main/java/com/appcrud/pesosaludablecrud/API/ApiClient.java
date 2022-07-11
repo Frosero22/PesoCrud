@@ -13,6 +13,9 @@ public class ApiClient {
 
     public static Services getInstance()
     {
+
+        String baseUrl = "http://test.neu360.com/";
+
         if (single_instance == null){
             HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
             interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -23,7 +26,7 @@ public class ApiClient {
 
             Retrofit retrofit = new Retrofit.Builder()
                     .client(client)
-                //    .baseUrl(baseurl)
+                    .baseUrl(baseUrl)
                     .addConverterFactory(JacksonConverterFactory.create())
                     .build();
             single_instance = retrofit.create(Services.class);

@@ -3,15 +3,16 @@ package com.appcrud.pesosaludablecrud.Utils;
 import android.content.Context;
 import android.content.Intent;
 
-import com.appcrud.pesosaludablecrud.Controllers.ClientesController;
 import com.appcrud.pesosaludablecrud.Controllers.DespachoController;
 import com.appcrud.pesosaludablecrud.Controllers.GuiasController;
+import com.appcrud.pesosaludablecrud.Controllers.ListadoClientesController;
 import com.appcrud.pesosaludablecrud.Controllers.LoginController;
 import com.appcrud.pesosaludablecrud.Controllers.OrdenesPedidosController;
 import com.appcrud.pesosaludablecrud.Controllers.PrincipalController;
 import com.appcrud.pesosaludablecrud.Controllers.ProductosController;
 import com.appcrud.pesosaludablecrud.Controllers.UsuariosController;
 import com.appcrud.pesosaludablecrud.Controllers.VisitasController;
+import com.appcrud.pesosaludablecrud.Models.PsoClientes;
 import com.appcrud.pesosaludablecrud.Parametrizaciones.CreacionClientesController;
 import com.appcrud.pesosaludablecrud.Parametrizaciones.CreacionValoracionController;
 
@@ -30,7 +31,7 @@ public class Routes {
     }
 
     public static void clientesController(Context context){
-        Intent intent = new Intent(context, ClientesController.class);
+        Intent intent = new Intent(context, ListadoClientesController.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
@@ -73,6 +74,27 @@ public class Routes {
 
     public static void crearClientesControoler(Context context){
         Intent intent = new Intent(context, CreacionClientesController.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    public static void crearClientesEdicionControoler(Context context, PsoClientes psoClientes){
+        Intent intent = new Intent(context, CreacionClientesController.class);
+        intent.putExtra("codigoCliente",psoClientes.getCodigoCliente());
+        intent.putExtra("tipoIdentificacio",psoClientes.getCodigoTipoIdentificacion());
+        intent.putExtra("identificacion",psoClientes.getIdentificacion());
+        intent.putExtra("primerNombre",psoClientes.getPrimerNombre());
+        intent.putExtra("segundoNombre",psoClientes.getSegundoNombre());
+        intent.putExtra("primerApellido",psoClientes.getPrimerApellido());
+        intent.putExtra("segundoApellido",psoClientes.getSegundoApellido());
+        intent.putExtra("correo",psoClientes.getEmail());
+        intent.putExtra("telefono",psoClientes.getTelefono());
+        intent.putExtra("genero",psoClientes.getGenero());
+        intent.putExtra("esEdicion","S");
+        intent.putExtra("fechaNacimiento",psoClientes.getFechaNacimiento());
+        intent.putExtra("latitud",psoClientes.getLatitud());
+        intent.putExtra("longitud",psoClientes.getLongitud());
+
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }

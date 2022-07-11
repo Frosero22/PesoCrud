@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Controllers.ClientesController">
-
-
+    tools:context=".Controllers.ListadoClientesController">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/lista_clientes_registrados"
         android:layout_width="match_parent"

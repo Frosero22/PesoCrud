@@ -50,9 +50,13 @@ public class LoginController extends AppCompatActivity {
 
         usuario = Sessions.obtenerUsuario(LoginController.this);
 
-        if(usuario.getEsAdministrador() != null){
-            Routes.principalController(LoginController.this);
+        if(usuario.getUsuario() != null){
+            if(usuario.usuario.getEsAdministrador() != null && !usuario.usuario.getEsAdministrador().equalsIgnoreCase("")){
+                Routes.principalController(LoginController.this);
+            }
+
         }
+
 
         input_user = findViewById(R.id.input_user);
         input_password = findViewById(R.id.input_password);
@@ -140,7 +144,7 @@ public class LoginController extends AppCompatActivity {
 
 
     public void iniciarApp(Usuario usuario){
-        Sessions.guardaUsuario(usuario,LoginController.this);
+        Sessions.guardaUsuario(usuario,edit_user.getText().toString(),LoginController.this);
 
         progressDialog.dismissDialog();
         Routes.principalController(LoginController.this);

@@ -1,9 +1,11 @@
 package com.appcrud.pesosaludablecrud.Controllers;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,8 +21,8 @@ public class PrincipalController extends AppCompatActivity {
 
 
     private Usuario usuario = new Usuario();
-    private Button btn_personal;
-    private Button btn_productos;
+    private CardView btn_personal;
+    private CardView btn_productos;
     private Context context;
 
     private long backPressedTime;
@@ -35,7 +37,7 @@ public class PrincipalController extends AppCompatActivity {
 
     public void init(){
         context = PrincipalController.this;
-        usuario = Sessions.obtenerUsuario(context);
+        usuario = Sessions.obtenerUsuario(PrincipalController.this);
 
         btn_personal = findViewById(R.id.btn_personal);
         btn_personal.setOnClickListener(view -> routes(1));
@@ -43,19 +45,24 @@ public class PrincipalController extends AppCompatActivity {
         btn_productos = findViewById(R.id.btn_productos);
         btn_productos.setOnClickListener(view -> routes(2));
 
-        Button btn_visitas = findViewById(R.id.btn_visitas);
+        if(!usuario.getUsuario().getEsAdministrador().equalsIgnoreCase("S")){
+            btn_personal.setVisibility(View.GONE);
+            btn_productos.setVisibility(View.GONE);
+        }
+
+        CardView btn_visitas = findViewById(R.id.btn_visitas);
         btn_visitas.setOnClickListener(view -> routes(3));
 
-        Button btn_clientes = findViewById(R.id.btn_clientes);
+        CardView btn_clientes = findViewById(R.id.btn_clientes);
         btn_clientes.setOnClickListener(view -> routes(4));
 
-        Button btn_pedidos = findViewById(R.id.btn_pedidos);
+        CardView btn_pedidos = findViewById(R.id.btn_pedidos);
         btn_pedidos.setOnClickListener(view -> routes(5));
 
-        Button btn_despacho = findViewById(R.id.btn_despacho);
+        CardView btn_despacho = findViewById(R.id.btn_despacho);
         btn_despacho.setOnClickListener(view -> routes(6));
 
-        Button btn_guias = findViewById(R.id.btn_guias);
+        CardView btn_guias = findViewById(R.id.btn_guias);
         btn_guias.setOnClickListener(view -> routes(7));
     }
 
@@ -72,7 +79,7 @@ public class PrincipalController extends AppCompatActivity {
     }
 
     public void validaRoles(){
-        if(!usuario.getEsAdministrador().equalsIgnoreCase("S")){
+        if(!usuario.usuario.getEsAdministrador().equalsIgnoreCase("S")){
             btn_personal.setVisibility(View.GONE);
             btn_productos.setVisibility(View.GONE);
         }
@@ -88,7 +95,9 @@ public class PrincipalController extends AppCompatActivity {
             case 3:
                 Routes.visitasController(context);
             case 4:
-                Routes.clientesController(context);
+                Handler handler = new Handler(getMainLooper());
+                handler.post(() -> Routes.clientesController(context));
+
             case 5:
                 Routes.ordenesController(context);
             case 6:

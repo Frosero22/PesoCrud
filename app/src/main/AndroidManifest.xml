@@ -3,6 +3,8 @@
     package="com.appcrud.pesosaludablecrud">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -10,8 +12,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PesoSaludableCRUD">
-        <activity android:name=".Parametrizaciones.CreacionValoracionController"></activity>
+        android:theme="@style/Theme.PesoSaludableCRUD"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".Controllers.ListadoClientesController"></activity>
+        <activity android:name=".Vistas.DetalleVisitaVista" />
+        <activity android:name=".Parametrizaciones.CreacionValoracionController" />
         <activity android:name=".Controllers.GuiasController" />
         <activity android:name=".Controllers.DespachoController" />
         <activity android:name=".Controllers.ProductosController" />
@@ -24,7 +29,6 @@
         <activity android:name=".Controllers.OrdenesPedidosController" />
         <activity android:name=".Parametrizaciones.CreacionVisitaController" />
         <activity android:name=".Parametrizaciones.CreacionClientesController" />
-        <activity android:name=".Controllers.ClientesController" />
         <activity android:name=".Controllers.VisitasController" />
         <activity android:name=".Controllers.PrincipalController" />
         <activity android:name=".Controllers.LoginController">

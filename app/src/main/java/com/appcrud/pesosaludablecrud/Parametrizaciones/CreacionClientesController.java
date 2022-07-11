@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
@@ -74,8 +75,10 @@ public class CreacionClientesController extends AppCompatActivity {
     private Button btnGuardar;
 
     private Integer codigoTipoIdentificacion;
+    private Integer codigoCliente;
     private String latitud;
     private String longitud;
+    private String esEdicion;
     protected Services service = ApiClient.getInstance();
     private ProgressDialog progressDialog = new ProgressDialog(CreacionClientesController.this);
 
@@ -86,9 +89,12 @@ public class CreacionClientesController extends AppCompatActivity {
         setContentView(R.layout.creacion_clientes_activity);
         init();
         tiposIdentificacion();
+        validaEsEdicion();
     }
 
     public void init(){
+
+        atTiposIdentificacion = findViewById(R.id.atTiposIdentificacion);
 
         inptIdentificacion = findViewById(R.id.inptIdentifcacion);
         txtIdentificacion = findViewById(R.id.txtIdentificacion);
@@ -100,7 +106,7 @@ public class CreacionClientesController extends AppCompatActivity {
         txtPrimerApellido = findViewById(R.id.txtPrimerApellido);
 
         inptSegundoNombre = findViewById(R.id.txtInpSegundoNombre);
-        txtSegundoApellido = findViewById(R.id.txtSegundoNombre);
+        txtSegundoNombre = findViewById(R.id.txtSegundoNombre);
 
         inptSegundoApellido = findViewById(R.id.txtInpSegundoApellido);
         txtSegundoApellido = findViewById(R.id.txtSegundoApellido);
@@ -115,7 +121,23 @@ public class CreacionClientesController extends AppCompatActivity {
         txtTelefono = findViewById(R.id.txtTelefono);
 
         radMasculino = findViewById(R.id.radMasculino);
+        radMasculino.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(radFemenino.isSelected()){
+                    radFemenino.setSelected(false);
+                }
+            }
+        });
         radFemenino = findViewById(R.id.radFemenino);
+        radFemenino.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(radMasculino.isSelected()){
+                    radMasculino.setSelected(false);
+                }
+            }
+        });
 
         inptGeolocalizacion = findViewById(R.id.inptGeolocalizacion);
         txtGeolocalizacion = findViewById(R.id.txtGeolocalizacion);
@@ -136,31 +158,123 @@ public class CreacionClientesController extends AppCompatActivity {
         });
 
         btnGuardar = findViewById(R.id.btGuardar);
+
+        validaEsEdicion();
+
+        if(esEdicion != null){
+            if(esEdicion.equalsIgnoreCase("S")){
+                btnGuardar.setText("Actualizar Cliente");
+            }
+        }
+
+
         btnGuardar.setOnClickListener(view -> validaEstructura());
-
-
-
 
 
     }
 
     public void tiposIdentificacion(){
-        lsTiposIdentificacion.add("CEDULA");
-        lsTiposIdentificacion.add("RUC");
-        lsTiposIdentificacion.add("SIN IDENTIFICACION");
 
-        ArrayAdapter<String> a = new ArrayAdapter<String>(CreacionClientesController.this,R.layout.option_item,lsTiposIdentificacion);
-        runOnUiThread(() -> {
-            atTiposIdentificacion.setAdapter(a);
-            atTiposIdentificacion.setText(a.getItem(0),false);
-            if(a.getItem(0).equalsIgnoreCase("CEDULA")){
-                codigoTipoIdentificacion = 1;
-            }else if(a.getItem(0).equalsIgnoreCase("RUC")){
-                codigoTipoIdentificacion = 2;
+        if(esEdicion.equalsIgnoreCase("S")){
+
+            if(codigoTipoIdentificacion == 1){
+                lsTiposIdentificacion.add("CEDULA");
+                lsTiposIdentificacion.add("RUC");
+                lsTiposIdentificacion.add("SIN IDENTIFICACION");
+            }else if(codigoTipoIdentificacion == 2){
+                lsTiposIdentificacion.add("RUC");
+                lsTiposIdentificacion.add("CEDULA");
+                lsTiposIdentificacion.add("SIN IDENTIFICACION");
             }else{
-                codigoTipoIdentificacion = 3;
+                lsTiposIdentificacion.add("SIN IDENTIFICACION");
+                lsTiposIdentificacion.add("CEDULA");
+                lsTiposIdentificacion.add("RUC");
             }
-        });
+
+
+
+            ArrayAdapter<String> a = new ArrayAdapter<String>(CreacionClientesController.this,R.layout.option_item,lsTiposIdentificacion);
+            runOnUiThread(() -> {
+                atTiposIdentificacion.setAdapter(a);
+                atTiposIdentificacion.setText(a.getItem(0),false);
+                if(a.getItem(0).equalsIgnoreCase("CEDULA")){
+                    codigoTipoIdentificacion = 1;
+                }else if(a.getItem(0).equalsIgnoreCase("RUC")){
+                    codigoTipoIdentificacion = 2;
+                }else{
+                    codigoTipoIdentificacion = 3;
+                }
+            });
+
+        }else{
+            lsTiposIdentificacion.add("CEDULA");
+            lsTiposIdentificacion.add("RUC");
+            lsTiposIdentificacion.add("SIN IDENTIFICACION");
+
+            ArrayAdapter<String> a = new ArrayAdapter<String>(CreacionClientesController.this,R.layout.option_item,lsTiposIdentificacion);
+            runOnUiThread(() -> {
+                atTiposIdentificacion.setAdapter(a);
+                atTiposIdentificacion.setText(a.getItem(0),false);
+                if(a.getItem(0).equalsIgnoreCase("CEDULA")){
+                    codigoTipoIdentificacion = 1;
+                }else if(a.getItem(0).equalsIgnoreCase("RUC")){
+                    codigoTipoIdentificacion = 2;
+                }else{
+                    codigoTipoIdentificacion = 3;
+                }
+            });
+        }
+
+
+    }
+
+    public void validaEsEdicion(){
+
+        Bundle bundle = this.getIntent().getExtras();
+
+        esEdicion = bundle.getString("esEdicion","");
+
+        if(esEdicion != null){
+            codigoTipoIdentificacion = bundle.getInt("tipoIdentificacion",0);
+            codigoCliente = bundle.getInt("codigoCliente",0);
+
+
+
+            String identificacion = bundle.getString("identificacion","");
+            String primerNombre = bundle.getString("primerNombre","");
+            String segundoNombre = bundle.getString("segundoNombre","");
+            String primerApellido = bundle.getString("primerApellido","");
+            String segundoApellido = bundle.getString("segundoApellido","");
+            String correo = bundle.getString("correo","");
+            String telefono = bundle.getString("telefono","");
+            String genero = bundle.getString("genero","");
+            String fechaNacimiento = bundle.getString("fechaNacimiento","");
+
+            if(genero.equalsIgnoreCase("M")){
+                radMasculino.setSelected(true);
+            }else{
+                radFemenino.setSelected(true);
+            }
+
+            String latitud = bundle.getString("latitud","");
+            String longitud = bundle.getString("longitud","");
+
+            String geoLocalizacion = latitud+" ; "+longitud;
+
+            txtIdentificacion.setText(identificacion);
+            txtPrimerNombre.setText(primerNombre);
+            txtSegundoNombre.setText(segundoNombre);
+            txtPrimerApellido.setText(primerApellido);
+            txtSegundoApellido.setText(segundoApellido);
+            txtCorreo.setText(correo);
+            txtTelefono.setText(telefono);
+            txtGeolocalizacion.setText(geoLocalizacion);
+            txtFechaNacimiento.setText(fechaNacimiento);
+        }
+
+
+
+
     }
 
     public boolean valida(){
@@ -279,9 +393,41 @@ public class CreacionClientesController extends AppCompatActivity {
             requestGuardarCliente.setLatitud(latitud);
             requestGuardarCliente.setLongitud(longitud);
 
-            guardarCliente(requestGuardarCliente);
+
+            if(esEdicion.equalsIgnoreCase("S")){
+                requestGuardarCliente.setCodigoCliente(codigoCliente);
+                actualizaCliente(requestGuardarCliente);
+            }else if(esEdicion.equalsIgnoreCase("N")){
+                guardarCliente(requestGuardarCliente);
+            }
+
         }
 
+    }
+
+
+    public void actualizaCliente(RequestGuardarCliente requestGuardarCliente){
+        progressDialog.startLoadingDialog("Actualización CLiente");
+        Call<ClienteGuardadoResponse> call = service.actualizaCliente(requestGuardarCliente);
+        call.enqueue(new Callback<ClienteGuardadoResponse>() {
+            @Override
+            public void onResponse(Call<ClienteGuardadoResponse> call, Response<ClienteGuardadoResponse> response) {
+                progressDialog.dismissDialog();
+                if(response.code() == 200){
+                    ClienteGuardadoResponse clienteGuardadoResponse = response.body();
+                    Messages.mensajeExito(CreacionClientesController.this,clienteGuardadoResponse.getMensaje());
+                    Routes.clientesController(CreacionClientesController.this);
+                   // validaValoracionInicial(Integer.parseInt(clienteGuardadoResponse.getCodigoCliente()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ClienteGuardadoResponse> call, Throwable t) {
+                progressDialog.dismissDialog();
+                t.printStackTrace();
+                Messages.mensajeError(CreacionClientesController.this,"Error al guardar cliente, mensaje para sistemas: "+t.getLocalizedMessage());
+            }
+        });
     }
 
     public void guardarCliente(RequestGuardarCliente requestGuardarCliente){

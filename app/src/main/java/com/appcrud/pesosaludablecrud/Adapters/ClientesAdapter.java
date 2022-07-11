@@ -13,20 +13,24 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.appcrud.pesosaludablecrud.API.ApiModelsResponse.Clientes;
+import com.appcrud.pesosaludablecrud.Models.PsoClientes;
 import com.appcrud.pesosaludablecrud.R;
+import com.appcrud.pesosaludablecrud.Utils.Routes;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class ClientesAdapter extends RecyclerView.Adapter<ClientesAdapter.HolderClientes>{
+public class ClientesAdapter extends RecyclerView.Adapter<ClientesAdapter.HolderClientes> implements View.OnClickListener{
 
-    private List<Clientes> lsCLientes;
-    private Clientes clientes;
+    private List<PsoClientes> lsCLientes;
+    private PsoClientes clientes;
     private static Context context;
 
-    public ClientesAdapter(List<Clientes> lsCLientes, Context context){
+    private View.OnClickListener listener;
+
+    public ClientesAdapter(List<PsoClientes> lsCLientes, Context context){
         this.lsCLientes = lsCLientes;
         this.context = context;
     }
@@ -34,7 +38,7 @@ public class ClientesAdapter extends RecyclerView.Adapter<ClientesAdapter.Holder
     @Override
     public ClientesAdapter.HolderClientes onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.clientes_cardview,parent,false);
-        v.setOnClickListener((View.OnClickListener) this);
+        v.setOnClickListener(this);
         return new HolderClientes(v);
 
     }
@@ -42,18 +46,15 @@ public class ClientesAdapter extends RecyclerView.Adapter<ClientesAdapter.Holder
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull HolderClientes holder, int position) {
-        holder.txvCodigoCliente.setText(lsCLientes.get(position).getCodigoCliente());
+        holder.txvCodigoCliente.setText("Cliente #"+String.valueOf(lsCLientes.get(position).getCodigoCliente()));
         String strNombreCliente = "";
 
         strNombreCliente = lsCLientes.get(position).getPrimerNombre()+" "+lsCLientes.get(position).getPrimerApellido();
 
         holder.txvNombreCliente.setText(strNombreCliente);
         holder.txvEdad.setText(edad(position));
-        holder.btn_ver_informacion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
+        holder.btn_ver_informacion.setOnClickListener(view -> {
+            Routes.crearClientesEdicionControoler(context,lsCLientes.get(position));
         });
 
 
@@ -111,6 +112,13 @@ public class ClientesAdapter extends RecyclerView.Adapter<ClientesAdapter.Holder
 
         }
         return strFechaNacimiento;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (listener!=null){
+            listener.onClick(view);
+        }
     }
 
     public class HolderClientes extends RecyclerView.ViewHolder{
