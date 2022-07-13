@@ -7,6 +7,9 @@ public class ClienteGuardadoResponse {
     @SerializedName("mensaje")
     private String mensaje;
 
+    @SerializedName("causa")
+    private String causa;
+
     @SerializedName("codigoCliente")
     private String codigoCliente;
 
@@ -16,6 +19,14 @@ public class ClienteGuardadoResponse {
 
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
+    }
+
+    public String getCausa() {
+        return causa;
+    }
+
+    public void setCausa(String causa) {
+        this.causa = causa;
     }
 
     public String getCodigoCliente() {

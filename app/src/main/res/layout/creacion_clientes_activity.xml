@@ -177,39 +177,33 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <RadioGroup
-                android:layout_width="321dp"
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center">
+                android:paddingTop="20dp"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:hint="Genero">
 
-                <LinearLayout
+                <AutoCompleteTextView
+                    android:id="@+id/atGeneros"
                     android:layout_width="match_parent"
+                    android:background="@drawable/custom_edit_text"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center">
+                    android:layout_weight="1"
+                    android:inputType="none">
 
-                    <RadioButton
-                        android:id="@+id/radMasculino"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="MASCULINO"
-                        android:textSize="20dp">
-
-                    </RadioButton>
+                </AutoCompleteTextView>
 
 
-                    <RadioButton
-                        android:id="@+id/radFemenino"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="FEMENINO"
-                        android:textSize="20dp">
-
-                    </RadioButton>
-
-                </LinearLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-            </RadioGroup>
+
 
             <Button
                 android:id="@+id/btnTomarFechaNacimiento"
@@ -314,7 +308,7 @@
                     android:hint="Presióne encima para tomar la ubicación actual"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textEmailAddress"
-                    android:enabled="false"
+                    android:focusable="false"
                     android:maxLines="1"
                     android:singleLine="true"/>
 

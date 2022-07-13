@@ -81,7 +81,7 @@ public class Routes {
     public static void crearClientesEdicionControoler(Context context, PsoClientes psoClientes){
         Intent intent = new Intent(context, CreacionClientesController.class);
         intent.putExtra("codigoCliente",psoClientes.getCodigoCliente());
-        intent.putExtra("tipoIdentificacio",psoClientes.getCodigoTipoIdentificacion());
+        intent.putExtra("tipoIdentificacion",psoClientes.getCodigoTipoIdentificacion());
         intent.putExtra("identificacion",psoClientes.getIdentificacion());
         intent.putExtra("primerNombre",psoClientes.getPrimerNombre());
         intent.putExtra("segundoNombre",psoClientes.getSegundoNombre());

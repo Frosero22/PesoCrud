@@ -2,11 +2,19 @@ package com.appcrud.pesosaludablecrud.Parametrizaciones;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -18,31 +26,38 @@ import android.widget.Toast;
 import com.appcrud.pesosaludablecrud.API.ApiClient;
 import com.appcrud.pesosaludablecrud.API.ApiModelsRequest.RequestGuardarCliente;
 import com.appcrud.pesosaludablecrud.API.ApiModelsResponse.ClienteGuardadoResponse;
+import com.appcrud.pesosaludablecrud.API.ApiModelsResponse.Usuario;
 import com.appcrud.pesosaludablecrud.API.Services;
+import com.appcrud.pesosaludablecrud.Controllers.PrincipalController;
 import com.appcrud.pesosaludablecrud.R;
 import com.appcrud.pesosaludablecrud.Utils.Location;
 import com.appcrud.pesosaludablecrud.Utils.Messages;
 import com.appcrud.pesosaludablecrud.Utils.ProgressDialog;
 import com.appcrud.pesosaludablecrud.Utils.Routes;
+import com.appcrud.pesosaludablecrud.Utils.Sessions;
 import com.google.android.material.textfield.TextInputLayout;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.content.ContentValues.TAG;
+
 public class CreacionClientesController extends AppCompatActivity {
 
     private List<String> lsTiposIdentificacion = new ArrayList<>();
+    private List<String> lsGeneros = new ArrayList<>();
     private AutoCompleteTextView atTiposIdentificacion;
+    private AutoCompleteTextView atGeneros;
 
-
-
-    private RadioButton radMasculino;
-    private RadioButton radFemenino;
+    private Usuario usuario = new Usuario();
 
     private TextInputLayout inptIdentificacion;
     private EditText txtIdentificacion;
@@ -79,22 +94,75 @@ public class CreacionClientesController extends AppCompatActivity {
     private String latitud;
     private String longitud;
     private String esEdicion;
+    private String genero;
     protected Services service = ApiClient.getInstance();
     private ProgressDialog progressDialog = new ProgressDialog(CreacionClientesController.this);
 
+    private DatePickerDialog datePickerDialog;
+
+    private final static int ALL_PERMISSIONS_RESULT = 101;
+    ArrayList<String> permissions = new ArrayList<>();
+    ArrayList<String> permissionsToRequest;
+
+    private final int PLACE_PIKER = 1;
+
+    boolean isGPS = false;
+    boolean isNetwork = false;
+    boolean canGetLocation = true;
+    private LocationManager locationManager;
+    private android.location.Location loc;
+
+    private double latitude;
+    private double longitude;
+
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1;//1 Metro
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;//1 minuto
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.creacion_clientes_activity);
         init();
-        tiposIdentificacion();
+        llenaCombos();
         validaEsEdicion();
     }
 
     public void init(){
+        initDatePicker();
+        Bundle bundle = this.getIntent().getExtras();
+        usuario = Sessions.obtenerUsuario(CreacionClientesController.this);
+//        esEdicion = bundle.getString("esEdicion","");
 
         atTiposIdentificacion = findViewById(R.id.atTiposIdentificacion);
+        atTiposIdentificacion.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(lsTiposIdentificacion.get(i).equalsIgnoreCase("CEDULA")){
+                    codigoTipoIdentificacion = 1;
+                }else if(lsTiposIdentificacion.get(i).equalsIgnoreCase("RUC")){
+
+                    codigoTipoIdentificacion = 2;
+                }else{
+                    codigoTipoIdentificacion = 3;
+                }
+
+            }
+        });
+
+        atGeneros = findViewById(R.id.atGeneros);
+        atGeneros.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(lsGeneros.get(i).equalsIgnoreCase("MASCULINO")){
+                    genero = "M";
+                }else if(lsGeneros.get(i).equalsIgnoreCase("FEMENINO")){
+                    genero = "F";
+                }else{
+                    genero = "I";
+                }
+
+            }
+        });
 
         inptIdentificacion = findViewById(R.id.inptIdentifcacion);
         txtIdentificacion = findViewById(R.id.txtIdentificacion);
@@ -120,30 +188,13 @@ public class CreacionClientesController extends AppCompatActivity {
         inptTelefono = findViewById(R.id.txtInptTelefono);
         txtTelefono = findViewById(R.id.txtTelefono);
 
-        radMasculino = findViewById(R.id.radMasculino);
-        radMasculino.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(radFemenino.isSelected()){
-                    radFemenino.setSelected(false);
-                }
-            }
-        });
-        radFemenino = findViewById(R.id.radFemenino);
-        radFemenino.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(radMasculino.isSelected()){
-                    radMasculino.setSelected(false);
-                }
-            }
-        });
 
         inptGeolocalizacion = findViewById(R.id.inptGeolocalizacion);
         txtGeolocalizacion = findViewById(R.id.txtGeolocalizacion);
         txtGeolocalizacion.setOnClickListener(view -> {
+            solicitaPermisos();
             Location location = new Location();
-            location.getLocation();
+            location.getLocation(CreacionClientesController.this);
 
             if(location.getLoc() != null){
                 if(!location.getLoc().equalsIgnoreCase("")){
@@ -169,48 +220,171 @@ public class CreacionClientesController extends AppCompatActivity {
 
 
         btnGuardar.setOnClickListener(view -> validaEstructura());
+        btnFechaNacimiento = findViewById(R.id.btnTomarFechaNacimiento);
+        btnFechaNacimiento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                datePickerDialog.show();
+            }
+        });
 
 
     }
 
-    public void tiposIdentificacion(){
+    private void solicitaPermisos() {
+        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        permissionsToRequest = findUnAskedPermissions(permissions);
 
-        if(esEdicion.equalsIgnoreCase("S")){
+        if (!isGPS && !isNetwork) {
+            Log.d(TAG, "Connection off");
 
-            if(codigoTipoIdentificacion == 1){
-                lsTiposIdentificacion.add("CEDULA");
-                lsTiposIdentificacion.add("RUC");
-                lsTiposIdentificacion.add("SIN IDENTIFICACION");
-            }else if(codigoTipoIdentificacion == 2){
-                lsTiposIdentificacion.add("RUC");
-                lsTiposIdentificacion.add("CEDULA");
-                lsTiposIdentificacion.add("SIN IDENTIFICACION");
-            }else{
-                lsTiposIdentificacion.add("SIN IDENTIFICACION");
-                lsTiposIdentificacion.add("CEDULA");
-                lsTiposIdentificacion.add("RUC");
+        } else {
+            Log.d(TAG, "Connection on");
+            // check permissions
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (permissionsToRequest.size() > 0) {
+                    requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]),
+                            ALL_PERMISSIONS_RESULT);
+                    Log.d(TAG, "Permission requests");
+                    canGetLocation = false;
+                }
             }
 
+        }
+    }
+
+    private ArrayList findUnAskedPermissions(ArrayList<String> wanted) {
+        ArrayList result = new ArrayList();
+        for (String perm : wanted) {
+            if (!hasPermission(perm)) {
+                result.add(perm);
+            }
+        }
+        return result;
+    }
+
+    private boolean hasPermission(String permission) {
+        if (canAskPermission()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED);
+            }
+        }
+        return true;
+    }
+
+    private boolean canAskPermission() {
+        return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
+
+    private void initDatePicker()
+    {
+        DatePickerDialog.OnDateSetListener dateSetListener = (datePicker, year, month, day) -> {
+            month = month + 1;
+
+            String mes = null;
+            if(month < 10){
+                mes = "0"+month;
+            }
+
+            String date;
+            if(mes != null){
+
+                date = day+"/"+mes+"/"+year;
+
+            }else{
+
+                date = makeDateString(day, month, year);
+
+            }
+            txtFechaNacimiento.setText(date);
 
 
-            ArrayAdapter<String> a = new ArrayAdapter<String>(CreacionClientesController.this,R.layout.option_item,lsTiposIdentificacion);
-            runOnUiThread(() -> {
-                atTiposIdentificacion.setAdapter(a);
-                atTiposIdentificacion.setText(a.getItem(0),false);
-                if(a.getItem(0).equalsIgnoreCase("CEDULA")){
-                    codigoTipoIdentificacion = 1;
-                }else if(a.getItem(0).equalsIgnoreCase("RUC")){
-                    codigoTipoIdentificacion = 2;
+        };
+
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        int style = AlertDialog.THEME_HOLO_LIGHT;
+
+        datePickerDialog = new DatePickerDialog(this, style, dateSetListener, year, month, day);
+
+
+    }
+
+    private String makeDateString(int day, int month, int year)
+    {
+        return day+"/"+month+"/"+year;
+    }
+
+    public void llenaCombos(){
+
+        if(esEdicion != null){
+            if(esEdicion.equalsIgnoreCase("S")){
+                if(codigoTipoIdentificacion == 1){
+                    lsTiposIdentificacion.add("CEDULA");
+                    lsTiposIdentificacion.add("RUC");
+                    lsTiposIdentificacion.add("SIN IDENTIFICACION");
+                }else if(codigoTipoIdentificacion == 2){
+                    lsTiposIdentificacion.add("RUC");
+                    lsTiposIdentificacion.add("CEDULA");
+                    lsTiposIdentificacion.add("SIN IDENTIFICACION");
                 }else{
-                    codigoTipoIdentificacion = 3;
+                    lsTiposIdentificacion.add("SIN IDENTIFICACION");
+                    lsTiposIdentificacion.add("CEDULA");
+                    lsTiposIdentificacion.add("RUC");
                 }
-            });
 
+
+
+                ArrayAdapter<String> a = new ArrayAdapter<String>(CreacionClientesController.this,R.layout.option_item,lsTiposIdentificacion);
+                runOnUiThread(() -> {
+                    atTiposIdentificacion.setAdapter(a);
+                    atTiposIdentificacion.setText(a.getItem(0),false);
+                    if(a.getItem(0).equalsIgnoreCase("CEDULA")){
+                        codigoTipoIdentificacion = 1;
+                    }else if(a.getItem(0).equalsIgnoreCase("RUC")){
+                        codigoTipoIdentificacion = 2;
+                    }else{
+                        codigoTipoIdentificacion = 3;
+                    }
+                });
+
+
+
+
+                if(genero.equalsIgnoreCase("M")){
+                    lsGeneros.add("MASCULINO");
+                    lsGeneros.add("FEMENINO");
+                }else if(genero.equalsIgnoreCase("F")){
+                    lsGeneros.add("FEMENINO");
+                    lsGeneros.add("MASCULINO");
+                }
+
+
+                ArrayAdapter<String> b = new ArrayAdapter<String>(CreacionClientesController.this,R.layout.option_item,lsGeneros);
+                runOnUiThread(() -> {
+                    atGeneros.setAdapter(b);
+                    atGeneros.setText(b.getItem(0),false);
+                    if(b.getItem(0).equalsIgnoreCase("MASCULINO")){
+                        genero = "MASCULINO";
+                    }else if(b.getItem(0).equalsIgnoreCase("FEMENINO")){
+                        genero = "FEMENINO";
+                    }else{
+                        genero = "INDIFERENTE";
+                    }
+                });
+            }
         }else{
             lsTiposIdentificacion.add("CEDULA");
             lsTiposIdentificacion.add("RUC");
             lsTiposIdentificacion.add("SIN IDENTIFICACION");
 
+            lsGeneros.add("MASCULINO");
+            lsGeneros.add("FEMENINO");
+
             ArrayAdapter<String> a = new ArrayAdapter<String>(CreacionClientesController.this,R.layout.option_item,lsTiposIdentificacion);
             runOnUiThread(() -> {
                 atTiposIdentificacion.setAdapter(a);
@@ -223,57 +397,78 @@ public class CreacionClientesController extends AppCompatActivity {
                     codigoTipoIdentificacion = 3;
                 }
             });
+
+            ArrayAdapter<String> b = new ArrayAdapter<String>(CreacionClientesController.this,R.layout.option_item,lsGeneros);
+            runOnUiThread(() -> {
+                atGeneros.setAdapter(b);
+                atGeneros.setText(b.getItem(0),false);
+                if(b.getItem(0).equalsIgnoreCase("MASCULINO")){
+                    genero = "MASCULINO";
+                }else if(b.getItem(0).equalsIgnoreCase("FEMENINO")){
+                    genero = "FEMENINO";
+                }else{
+                    genero = "INDIFERENTE";
+                }
+            });
         }
+
+
+
+
+
 
 
     }
 
+
+
     public void validaEsEdicion(){
 
         Bundle bundle = this.getIntent().getExtras();
-
-        esEdicion = bundle.getString("esEdicion","");
-
-        if(esEdicion != null){
-            codigoTipoIdentificacion = bundle.getInt("tipoIdentificacion",0);
-            codigoCliente = bundle.getInt("codigoCliente",0);
+        if(bundle != null){
+            esEdicion = bundle.getString("esEdicion","");
 
 
+            if(esEdicion != null){
+                codigoTipoIdentificacion = bundle.getInt("tipoIdentificacion",0);
+                codigoCliente = bundle.getInt("codigoCliente",0);
 
-            String identificacion = bundle.getString("identificacion","");
-            String primerNombre = bundle.getString("primerNombre","");
-            String segundoNombre = bundle.getString("segundoNombre","");
-            String primerApellido = bundle.getString("primerApellido","");
-            String segundoApellido = bundle.getString("segundoApellido","");
-            String correo = bundle.getString("correo","");
-            String telefono = bundle.getString("telefono","");
-            String genero = bundle.getString("genero","");
-            String fechaNacimiento = bundle.getString("fechaNacimiento","");
 
-            if(genero.equalsIgnoreCase("M")){
-                radMasculino.setSelected(true);
-            }else{
-                radFemenino.setSelected(true);
+
+                String identificacion = bundle.getString("identificacion","");
+                String primerNombre = bundle.getString("primerNombre","");
+                String segundoNombre = bundle.getString("segundoNombre","");
+                String primerApellido = bundle.getString("primerApellido","");
+                String segundoApellido = bundle.getString("segundoApellido","");
+                String correo = bundle.getString("correo","");
+                String telefono = bundle.getString("telefono","");
+                String genero = bundle.getString("genero","");
+                String fechaNacimiento = bundle.getString("fechaNacimiento","");
+
+                Log.e("","GENERO "+genero);
+
+                if(genero.equalsIgnoreCase("M")){
+                    this.genero = "M";
+                }else if(genero.equalsIgnoreCase("F")){
+                    this.genero = "F";
+                }
+
+                latitud = bundle.getString("latitud","");
+                longitud = bundle.getString("longitud","");
+
+                String geoLocalizacion = latitud+" ; "+longitud;
+
+                txtIdentificacion.setText(identificacion);
+                txtPrimerNombre.setText(primerNombre);
+                txtSegundoNombre.setText(segundoNombre);
+                txtPrimerApellido.setText(primerApellido);
+                txtSegundoApellido.setText(segundoApellido);
+                txtCorreo.setText(correo);
+                txtTelefono.setText(telefono);
+                txtGeolocalizacion.setText(geoLocalizacion);
+                txtFechaNacimiento.setText(fechaNacimiento);
             }
-
-            String latitud = bundle.getString("latitud","");
-            String longitud = bundle.getString("longitud","");
-
-            String geoLocalizacion = latitud+" ; "+longitud;
-
-            txtIdentificacion.setText(identificacion);
-            txtPrimerNombre.setText(primerNombre);
-            txtSegundoNombre.setText(segundoNombre);
-            txtPrimerApellido.setText(primerApellido);
-            txtSegundoApellido.setText(segundoApellido);
-            txtCorreo.setText(correo);
-            txtTelefono.setText(telefono);
-            txtGeolocalizacion.setText(geoLocalizacion);
-            txtFechaNacimiento.setText(fechaNacimiento);
         }
-
-
-
 
     }
 
@@ -314,7 +509,7 @@ public class CreacionClientesController extends AppCompatActivity {
 
         }
 
-        if(!radFemenino.isSelected() && !radMasculino.isSelected()){
+        if(genero == null){
             Toast.makeText(this, "Seleccióne un Genero", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -380,26 +575,26 @@ public class CreacionClientesController extends AppCompatActivity {
                 requestGuardarCliente.setSegundoApellido(txtSegundoApellido.getText().toString().toUpperCase());
             }
 
-            String strGenero = "";
-            if(radMasculino.isSelected()){
-                strGenero = "M";
-            }else if(radFemenino.isSelected()){
-                strGenero = "F";
-            }
-            requestGuardarCliente.setGenero(strGenero);
+
+            requestGuardarCliente.setGenero(genero);
             requestGuardarCliente.setFechaNacimiento(txtFechaNacimiento.getText().toString());
             requestGuardarCliente.setEmail(txtCorreo.getText().toString());
             requestGuardarCliente.setTelefono(txtTelefono.getText().toString());
             requestGuardarCliente.setLatitud(latitud);
             requestGuardarCliente.setLongitud(longitud);
+            requestGuardarCliente.setEsActivo("S");
+            requestGuardarCliente.setUsuarioIngreso(usuario.usuario.getUsuario());
 
-
-            if(esEdicion.equalsIgnoreCase("S")){
-                requestGuardarCliente.setCodigoCliente(codigoCliente);
-                actualizaCliente(requestGuardarCliente);
-            }else if(esEdicion.equalsIgnoreCase("N")){
+            if(esEdicion != null){
+                if(esEdicion.equalsIgnoreCase("S")){
+                    requestGuardarCliente.setCodigoCliente(codigoCliente);
+                    actualizaCliente(requestGuardarCliente);
+                }
+            }else{
                 guardarCliente(requestGuardarCliente);
             }
+
+
 
         }
 
@@ -413,11 +608,16 @@ public class CreacionClientesController extends AppCompatActivity {
             @Override
             public void onResponse(Call<ClienteGuardadoResponse> call, Response<ClienteGuardadoResponse> response) {
                 progressDialog.dismissDialog();
+                ClienteGuardadoResponse clienteGuardadoResponse = response.body();
                 if(response.code() == 200){
-                    ClienteGuardadoResponse clienteGuardadoResponse = response.body();
-                    Messages.mensajeExito(CreacionClientesController.this,clienteGuardadoResponse.getMensaje());
+
+
+                    Toast.makeText(CreacionClientesController.this, "Cliente actualizad correctamente", Toast.LENGTH_SHORT).show();
                     Routes.clientesController(CreacionClientesController.this);
                    // validaValoracionInicial(Integer.parseInt(clienteGuardadoResponse.getCodigoCliente()));
+                }else{
+
+                    Messages.mensajeError(CreacionClientesController.this,"Error al guardar cliente, mensaje para sistemas: "+clienteGuardadoResponse.getCausa());
                 }
             }
 
@@ -465,7 +665,13 @@ public class CreacionClientesController extends AppCompatActivity {
                             Routes.creacionCreacionValoracion(CreacionClientesController.this,codigoCliente);
                             finish();
                             dialog.dismiss();
-                        }).setNegativeButton("Cancelar", (dialogInterface, i) -> Routes.clientesController(CreacionClientesController.this)).show();
+                        }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                Routes.clientesController(CreacionClientesController.this);
+            }
+        }).show();
     }
 
 

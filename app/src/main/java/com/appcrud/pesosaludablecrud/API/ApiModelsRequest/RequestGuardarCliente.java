@@ -44,6 +44,12 @@ public class RequestGuardarCliente {
     @Expose
     private String genero;
 
+    @Expose
+    private String esActivo;
+
+    @Expose
+    private String usuarioIngreso;
+
 
 
     public Integer getCodigoTipoIdentificacion() {
@@ -148,5 +154,21 @@ public class RequestGuardarCliente {
 
     public void setGenero(String genero) {
         this.genero = genero;
+    }
+
+    public String getEsActivo() {
+        return esActivo;
+    }
+
+    public void setEsActivo(String esActivo) {
+        this.esActivo = esActivo;
+    }
+
+    public String getUsuarioIngreso() {
+        return usuarioIngreso;
+    }
+
+    public void setUsuarioIngreso(String usuarioIngreso) {
+        this.usuarioIngreso = usuarioIngreso;
     }
 }
